@@ -5,21 +5,18 @@ metadata:
   namespace: my-app-k8s       # Must match deployment namespace
   labels:
     app: my-app
-  annotations:
-    # Tell the ingress-nginx controller to handle this Ingress
-    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   # Must match your installed Ingress Controller class
-  ingressClassName: nginx
+  ingressClassName: traefik
 
   rules:
-    - host: my-app.local      # Add to /etc/hosts → <node-ip> my-app.local
+    - host: app.demo.local
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: my-app           # Must match Service name
+                name: my-app
                 port:
-                  number: 80           # Must match Service port
+                  number: 80
