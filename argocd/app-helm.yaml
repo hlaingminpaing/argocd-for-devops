@@ -1,0 +1,23 @@
+# =============================================================
+# ArgoCD Application — Helm Chart (Multi-Environment)
+#
+# This file has been superseded by environment-specific files:
+#
+#   app-helm-dev.yaml   ← Development  (1 replica, debug logging, NodePort)
+#   app-helm-uat.yaml   ← UAT          (2 replicas, real domain, ClusterIP)
+#   app-helm-prod.yaml  ← Production   (3 replicas, HPA, manual sync)
+#
+# Each app uses valueFiles to layer configuration:
+#   helm-chart/my-app/values.yaml       ← base defaults (always applied)
+#   helm-chart/my-app/values-dev.yaml   ← dev overrides
+#   helm-chart/my-app/values-uat.yaml   ← uat overrides
+#   helm-chart/my-app/values-prod.yaml  ← prod overrides
+#
+# Deploy all environments:
+#   kubectl apply -f argocd/app-helm-dev.yaml
+#   kubectl apply -f argocd/app-helm-uat.yaml
+#   kubectl apply -f argocd/app-helm-prod.yaml
+#
+# Or deploy a single environment:
+#   kubectl apply -f argocd/app-helm-dev.yaml
+# =============================================================

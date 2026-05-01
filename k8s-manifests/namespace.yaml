@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: my-app-k8s          # Dedicated namespace for the raw-manifest app
+  labels:
+    app: my-app
+    managed-by: argocd
+    approach: raw-manifests  # Label to distinguish from helm deployment

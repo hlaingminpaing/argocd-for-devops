@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-app-uat
+  namespace: argocd
+
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+
+  labels:
+    environment: uat
+    app: my-app
+
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/hlaingminpaing/argocd-for-devops.git
+    targetRevision: HEAD
+    path: helm-chart/my-app
+
+    helm:
+      valueFiles:
+        - values.yaml
+        - values-uat.yaml
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: my-app-uat
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true

@@ -1,0 +1,24 @@
+apiVersion: v2
+name: my-app
+description: |
+  A simple demo web application Helm chart for DevOps class.
+  Deploys an nginx-based app with configurable replicas, resources, and ingress.
+
+# Chart type: "application" (deployable) vs "library" (reusable templates only)
+type: application
+
+# Chart version — bump this whenever you change the chart itself
+version: 0.1.0
+
+# App version — the version of the application being deployed
+appVersion: "1.0.0"
+
+maintainers:
+  - name: DevOps Class
+    email: devops@example.com
+
+keywords:
+  - nginx
+  - demo
+  - gitops
+  - argocd

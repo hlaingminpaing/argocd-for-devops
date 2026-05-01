@@ -1,0 +1,58 @@
+# =============================================================
+# values-prod.yaml — Production environment overrides
+# Merged ON TOP of values.yaml (base defaults)
+# =============================================================
+
+replicaCount: 3              # Three replicas spread across nodes for HA
+
+image:
+  repository: nginx
+  tag: "1.25-alpine"         # Pin to specific tag — never use "latest" in prod
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  host: my-app.example.com   # Production domain
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+
+resources:
+  requests:
+    cpu: "200m"              # Higher guaranteed resources in prod
+    memory: "256Mi"
+  limits:
+    cpu: "500m"
+    memory: "512Mi"
+
+env:
+  - name: APP_ENV
+    value: "production"
+  - name: LOG_LEVEL
+    value: "warn"            # Minimal logging in prod (reduce noise & cost)
+  - name: FEATURE_FLAGS
+    value: "none"            # No experimental features in prod
+
+# HPA enabled in production to handle traffic spikes
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+# Spread pods across nodes for fault tolerance
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: my-app
+          topologyKey: kubernetes.io/hostname

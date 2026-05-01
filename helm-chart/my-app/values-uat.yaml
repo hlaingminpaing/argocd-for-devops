@@ -1,0 +1,42 @@
+# =============================================================
+# values-uat.yaml — UAT (User Acceptance Testing) environment overrides
+# Merged ON TOP of values.yaml (base defaults)
+# =============================================================
+
+replicaCount: 2              # Two replicas for basic HA in UAT
+
+image:
+  repository: nginx
+  tag: "1.25-alpine"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP            # Use Ingress in UAT, not direct NodePort
+  port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  host: my-app.uat.example.com   # Real UAT domain (update DNS accordingly)
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+  limits:
+    cpu: "300m"
+    memory: "256Mi"
+
+env:
+  - name: APP_ENV
+    value: "uat"
+  - name: LOG_LEVEL
+    value: "info"
+  - name: FEATURE_FLAGS
+    value: "stable"          # Only stable features in UAT
+
+autoscaling:
+  enabled: false             # Manual scaling in UAT for predictability

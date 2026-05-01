@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+  namespace: my-app-k8s      # Must match namespace.yaml
+  labels:
+    app: my-app
+    version: "1.0.0"
+spec:
+  # ── Scaling ────────────────────────────────────────────────
+  replicas: 2                 # Run 2 pods for basic HA
+
+  selector:
+    matchLabels:
+      app: my-app             # Must match pod template labels below
+
+  # ── Rolling Update Strategy ────────────────────────────────
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1       # At most 1 pod down during updates
+      maxSurge: 1             # At most 1 extra pod during updates
+
+  template:
+    metadata:
+      labels:
+        app: my-app           # Selected by Service and Deployment
+        version: "1.0.0"
+
+    spec:
+      containers:
+        - name: my-app
+          image: nginx:1.25-alpine   # Lightweight nginx image
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+
+          # ── Environment variables ────────────────────────────
+          env:
+            - name: APP_ENV
+              value: "production"
+            - name: LOG_LEVEL
+              value: "info"
+
+          # ── Liveness probe ───────────────────────────────────
+          # Kubernetes restarts the container if this fails
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 3
+
+          # ── Readiness probe ──────────────────────────────────
+          # Traffic is only sent when this succeeds
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+
+          # ── Resource requests & limits ───────────────────────
+          resources:
+            requests:
+              cpu: "50m"      # Minimum guaranteed CPU
+              memory: "64Mi"  # Minimum guaranteed RAM
+            limits:
+              cpu: "200m"     # Maximum CPU (throttled above this)
+              memory: "128Mi" # Maximum RAM (OOMKilled above this)

@@ -1,0 +1,39 @@
+# =============================================================
+# values-dev.yaml — Development environment overrides
+# Merged ON TOP of values.yaml (base defaults)
+# =============================================================
+
+replicaCount: 1              # Single replica to save resources in dev
+
+image:
+  repository: nginx
+  tag: "1.25-alpine"
+  pullPolicy: Always         # Always pull to get latest in dev
+
+service:
+  type: NodePort             # Expose directly via node port for easy local access
+  port: 80
+
+ingress:
+  enabled: true
+  className: traefik
+  host: app.demo.local
+
+resources:
+  requests:
+    cpu: "50m"               # Low requests — dev cluster is shared
+    memory: "64Mi"
+  limits:
+    cpu: "200m"
+    memory: "128Mi"
+
+env:
+  - name: APP_ENV
+    value: "development"
+  - name: LOG_LEVEL
+    value: "debug"           # Verbose logging in dev
+  - name: FEATURE_FLAGS
+    value: "all"             # Enable all features in dev
+
+autoscaling:
+  enabled: false             # No HPA in dev
