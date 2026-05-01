@@ -8,7 +8,7 @@ metadata:
     version: "1.0.0"
 spec:
   # ── Scaling ────────────────────────────────────────────────
-  replicas: 2                 # Run 2 pods for basic HA
+  replicas: 3                 # Run 2 pods for basic HA
 
   selector:
     matchLabels:
