@@ -17,7 +17,7 @@ service:
 ingress:
   enabled: true
   className: traefik
-  host: app.demo.local
+  host: app-dev.demo.local
 
 resources:
   requests:
